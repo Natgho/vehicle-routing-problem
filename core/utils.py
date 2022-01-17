@@ -1,6 +1,6 @@
 # Created by Sezer BOZKIR<admin@sezerbozkir.com> at 15.01.2022
 from pprint import pp
-from base_models import BaseRouteFinder, Job, Vehicle, get_min_from_dict
+from core.base_models import BaseRouteFinder, Job, get_min_from_dict
 
 
 class FindBestRouteFlatten(BaseRouteFinder):
@@ -12,6 +12,7 @@ class FindBestRouteFlatten(BaseRouteFinder):
             self.output['routes'][best_vehicle]['delivery_duration'] += job.service
         pp(self.output)
         pp([str(x) for x in self.vehicles.values()])
+        return self.output
 
     def _find_best_vehicle(self, current_job: Job):
         best_distance = 0
@@ -29,15 +30,6 @@ class FindBestRouteFlatten(BaseRouteFinder):
         self.output['total_delivery_duration'] += current_job.service
         return best_vehicle.v_id
 
-    def _find_best_distances(self):
-        vehicle_job_distances = {v: [] for v in self.vehicles.keys()}
-        print(vehicle_job_distances)
-        for job in self.jobs.values():  # type: Job
-            for vehicle in self.vehicles.values():  # type:Vehicle
-                distance = self.routes[vehicle.start_index][job.location_index]
-                vehicle_job_distances[vehicle.v_id].append(distance)
-        pp(vehicle_job_distances)
-
 
 class FindBestRouteComplex(BaseRouteFinder):
     def __init__(self, *args, **kwargs):
@@ -54,6 +46,7 @@ class FindBestRouteComplex(BaseRouteFinder):
             [print(x) for x in self.vehicles.values()]
             print("*" * 30)
         pp(self.output)
+        return self.output
 
     def _find_current_distances(self, v_id):
         distances = {}
@@ -88,6 +81,7 @@ class FindBestRouteComplex(BaseRouteFinder):
         return {v_id: self._find_current_distances(v_id) for v_id in self.vehicles}
 
     def do_the_job(self, v_id, j_id, distance):
+        # TODO Check Vehicle available/unavailable status
         self.vehicles[v_id].capacity -= self.jobs[j_id].delivery
         self.vehicles[v_id].start_index = self.jobs[j_id].location_index
         self.output['total_delivery_duration'] += self.jobs[j_id].service + distance
@@ -95,4 +89,3 @@ class FindBestRouteComplex(BaseRouteFinder):
         self.output['routes'][v_id]['delivery_duration'] += self.jobs[j_id].service + distance
         self.jobs.pop(j_id)
         self.distances = self.calculate_distances()
-
