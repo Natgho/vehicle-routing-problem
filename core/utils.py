@@ -1,17 +1,21 @@
 # Created by Sezer BOZKIR<admin@sezerbozkir.com> at 15.01.2022
-from pprint import pp
 from core.base_models import BaseRouteFinder, Job, get_min_from_dict
+import logging
+from flask.logging import default_handler
+
+log = logging.getLogger()
+log.addHandler(default_handler)
 
 
 class FindBestRouteFlatten(BaseRouteFinder):
     def find_best_routes(self):
         for job in self.jobs.values():  # type: Job
-            print("*" * 30)
+            log.info("*" * 30)
             best_vehicle = self._find_best_vehicle(job)
             self.output['routes'][best_vehicle]['jobs'].append(job.j_id)
             self.output['routes'][best_vehicle]['delivery_duration'] += job.service
-        pp(self.output)
-        pp([str(x) for x in self.vehicles.values()])
+        log.info(self.output)
+        log.info([str(x) for x in self.vehicles.values()])
         return self.output
 
     def _find_best_vehicle(self, current_job: Job):
@@ -20,11 +24,11 @@ class FindBestRouteFlatten(BaseRouteFinder):
         for vehicle in self.vehicles.values():
             if vehicle.capacity >= current_job.delivery:
                 distance = self.routes.get_distance(vehicle.start_index, current_job.location_index)
-                print(f"best distance: {best_distance} distance: {distance}")
+                log.info(f"best distance: {best_distance} distance: {distance}")
                 if not best_distance or distance < best_distance:
                     best_vehicle = vehicle
                     best_distance = distance
-        print(f"final distance: {best_distance}")
+        log.info(f"final distance: {best_distance}")
         self.vehicles[best_vehicle.v_id].capacity -= current_job.delivery
         self.vehicles[best_vehicle.v_id].start_index = current_job.location_index
         self.output['total_delivery_duration'] += current_job.service
@@ -38,14 +42,14 @@ class FindBestRouteComplex(BaseRouteFinder):
 
     def find_best_routes(self):
         while len(self.jobs) > 0:
-            [print(x) for x in self.vehicles.values()]
-            pp(self.distances)
+            [log.info(x) for x in self.vehicles.values()]
+            log.info(self.distances)
             next_job = self.find_next_job()
-            print(f"next job: {next_job}")
+            log.info(f"next job: {next_job}")
             self.do_the_job(**next_job)
-            [print(x) for x in self.vehicles.values()]
-            print("*" * 30)
-        pp(self.output)
+            [log.info(x) for x in self.vehicles.values()]
+            log.info("*" * 30)
+        log.info(self.output)
         return self.output
 
     def _find_current_distances(self, v_id):
