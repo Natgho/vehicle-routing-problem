@@ -52,7 +52,7 @@ class BaseRouteFinder(ABC):
 
     @abstractmethod
     def find_best_routes(self):
-        pass
+        raise NotImplementedError("Route algorithm should be implemented.")
 
 
 def get_key_from_value(my_dict, to_find):
