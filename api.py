@@ -1,42 +1,53 @@
 # Created by Sezer BOZKIR<admin@sezerbozkir.com> at 17.01.2022
-from flask import Flask, request, jsonify
+from fastapi import FastAPI, Body
+from starlette.responses import RedirectResponse
+
 from core.utils import FindBestRouteFlatten, FindBestRouteComplex
-from logging.config import dictConfig
+from pydantic import BaseModel, Field
+import logging
+from app_consts import title, description, version, contact, sample_input
 
-dictConfig({
-    'version': 1,
-    'formatters': {'default': {
-        'format': '[%(asctime)s] %(levelname)s in %(module)s: %(message)s',
-    }},
-    'handlers': {'wsgi': {
-        'class': 'logging.StreamHandler',
-        'stream': 'ext://flask.logging.wsgi_errors_stream',
-        'formatter': 'default'
-    }},
-    'root': {
-        'level': 'INFO',
-        'handlers': ['wsgi']
-    }
-})
-
-app = Flask(__name__)
+logging.basicConfig(level=logging.INFO)
 
 
-@app.route('/api/find_best_route_flatten', methods=['POST'])
-def find_best_route_v1():
-    content = request.get_json()
-    route_solver = FindBestRouteFlatten(content)
+class Input(BaseModel):
+    vehicles: list = Field(description="Vehicle object in vehicles array")
+    jobs: list = Field(description="Index of the vehicle’s starting location")
+    matrix: list = Field(description="List of each row in the duration matrix. "
+                                     "Element (i, j) indicates the amount of seconds "
+                                     "it takes to travel from location index i to location index j")
+
+
+app = FastAPI(title=title,
+              description=description,
+              version=version,
+              contact=contact)
+
+
+@app.get("/")
+async def main():
+    """
+    The homepage where we can see the endpoints of the entire system.
+    """
+    response = RedirectResponse(url="/docs")
+    return response
+
+
+@app.post('/api/find_best_route_flatten')
+async def find_best_route_flatten(input_data: Input = Body(..., example=sample_input)):
+    """
+    Route optimization algorithm that prioritizes sequential work without time constraints.
+    """
+    route_solver = FindBestRouteFlatten(input_data.dict())
     best_routes = route_solver.find_best_routes()
-    return jsonify(best_routes)
+    return best_routes
 
 
-@app.route('/api/find_best_route_complex', methods=['POST'])
-def find_best_route_v2():
-    content = request.get_json()
-    route_solver = FindBestRouteComplex(content)
+@app.post('/api/find_best_route_complex')
+async def find_best_route_complex(input_data: Input = Body(..., example=sample_input)):
+    """
+    Route optimization algorithm that optimizes the route by prioritizing road weights.
+    """
+    route_solver = FindBestRouteComplex(input_data.dict())
     best_routes = route_solver.find_best_routes()
-    return jsonify(best_routes)
-
-
-if __name__ == '__main__':
-    app.run()
+    return best_routes
