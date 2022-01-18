@@ -1,0 +1,10 @@
+version: '3.0'
+
+services:
+  vehicle_route_optimization:
+    container_name: vehicle-route-optimization
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:80"
