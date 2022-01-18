@@ -22,6 +22,23 @@ tests/test_core_base_models.py      40      2    95%   35, 39
 TOTAL                              209      3    99%
 ```
 
+## How to Run Project
+```shell
+pip install -r requirements.txt
+uvicorn api:app --reload  
+```
+### Using with Docker:
+```shell
+docker build -t vehicle-route-optimization .
+docker run -d --name vehicle-route-optimization -p 0.0.0.0:8080:80 vehicle-route-optimization
+```
+Open your browser at http://localhost:8080  
+### Using with Docker-compose:
+```shell
+docker-compose up -d
+```
+Open your browser at http://localhost:8080
+
 ## Some personal questions
 1) Why vehicle capacity and jobs delivery variable types are array? (maybe related by Vroom input style)
 2) (output) sample delivery duration is not correct.
