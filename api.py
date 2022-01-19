@@ -2,7 +2,7 @@
 from fastapi import FastAPI, Body
 from starlette.responses import RedirectResponse
 
-from core.utils import FindBestRouteFlatten, FindBestRouteComplex
+from core.algorithms import FindBestRouteFlatten, FindBestRouteComplex
 from pydantic import BaseModel, Field
 import logging
 from app_consts import title, description, version, contact, sample_input
