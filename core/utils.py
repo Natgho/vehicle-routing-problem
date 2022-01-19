@@ -12,9 +12,9 @@ class FindBestRouteFlatten(BaseRouteFinder):
     def find_best_routes(self):
         for job in self.jobs.values():  # type: Job
             logger.info("*" * 30)
-            best_vehicle = self._find_best_vehicle(job)
+            best_vehicle, best_distance = self._find_best_vehicle(job)
             self.output['routes'][best_vehicle]['jobs'].append(job.j_id)
-            self.output['routes'][best_vehicle]['delivery_duration'] += job.service
+            self.output['routes'][best_vehicle]['delivery_duration'] += job.service + best_distance
         logger.info(self.output)
         logger.info([str(x) for x in self.vehicles.values()])
         return self.output
@@ -37,8 +37,8 @@ class FindBestRouteFlatten(BaseRouteFinder):
         logger.info(f"final distance: {best_distance}")
         self.vehicles[best_vehicle.v_id].capacity -= current_job.delivery
         self.vehicles[best_vehicle.v_id].start_index = current_job.location_index
-        self.output['total_delivery_duration'] += current_job.service
-        return best_vehicle.v_id
+        self.output['total_delivery_duration'] += current_job.service + best_distance
+        return best_vehicle.v_id, best_distance
 
 
 class FindBestRouteComplex(BaseRouteFinder):
