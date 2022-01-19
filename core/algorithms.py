@@ -1,5 +1,5 @@
 # Created by Sezer BOZKIR<admin@sezerbozkir.com> at 15.01.2022
-from core.base_models import BaseRouteFinder, Job, get_min_from_dict
+from core.utils import BaseRouteFinder, Job, get_min_from_dict
 from fastapi.logger import logger
 
 

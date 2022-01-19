@@ -1,6 +1,6 @@
 # Created by Sezer BOZKIR<admin@sezerbozkir.com> at 18.01.2022
 import pytest
-from core.base_models import *
+from core.utils import *
 
 
 @pytest.fixture
@@ -35,7 +35,7 @@ def my_base_model():
     return BaseRouteFinder(data={'vehicles': [], 'jobs': [], 'matrix': []})
 
 
-def test_base_model_with_incorrect_data():
+def test_base_route_finder_with_incorrect_data():
     class ChildClass(BaseRouteFinder):
         def find_best_routes(self):
             pass
