@@ -11,6 +11,10 @@ logging.basicConfig(level=logging.INFO)
 
 
 class Input(BaseModel):
+    """
+    It is used to serialize the incoming data.
+    It specifies what type of incoming data will be kept and what its contents will be.
+    """
     vehicles: list = Field(description="Vehicle object in vehicles array")
     jobs: list = Field(description="Index of the vehicle’s starting location")
     matrix: list = Field(description="List of each row in the duration matrix. "
