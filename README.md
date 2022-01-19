@@ -1,6 +1,25 @@
 # Vehicle Routing Problem
-coming soon...
+Vehicles are roaming around the neighborhood with a specific stock of products at a given time, 
+delivering orders one by one. There are n vehicles roaming around the city and m orders waiting 
+for the delivery. For the sake of simplicity, you can assume that vehicles carry infinite amount 
+of stock and delivery process itself takes zero time (handing over the carboy, climbing the ladders, 
+parking the vehicle etc). Given the input data, find the routes that minimizes the total delivery 
+duration. (Note that vehicles can end their journey in any location, they do not need to return back 
+to any depot since they carry infinite stock already.)
 
+## 2 potential Solution
+### Find Best Route (Flatten Version)
+While calculating the route according to the input information given, 
+the order of priority is taken into account. In this way, things are resolved 
+as they come. After each job is completed, it is assumed that all vehicles are available 
+for the next job. The work was done by choosing the vehicle with the shortest distance 
+between the vehicles.
+### Find Best Route (Complex Version)
+While calculating the route according to the input information given, the priority is to 
+complete the work as quickly as possible. In this way, it is aimed to complete the work as 
+soon as possible. When the data is received, the distances for each vehicle are calculated 
+in each cycle and the shortest one among these distances is selected and that work is done. 
+After each job is completed, it is assumed that all vehicles are available for the next job.
 ## Run Tests
 ```shell
 coverage run -m pytest
@@ -13,11 +32,11 @@ Name                             Stmts   Miss  Cover   Missing
 --------------------------------------------------------------
 api.py                              26      0   100%
 app_consts.py                        6      0   100%
-core/base_models.py                 48      1    98%   55
+core/base_models.py                 48      1    98%   86
 core/utils.py                       75      0   100%
 tests/__init__.py                    0      0   100%
 tests/test_api.py                   14      0   100%
-tests/test_core_base_models.py      40      2    95%   35, 39
+tests/test_core_base_models.py      40      2    95%   35, 41
 --------------------------------------------------------------
 TOTAL                              209      3    99%
 ```
