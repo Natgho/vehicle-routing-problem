@@ -4,6 +4,11 @@ from fastapi.logger import logger
 
 
 class FindBestRouteFlatten(BaseRouteFinder):
+    """
+    It prioritizes the sequential retrieval of jobs while optimizing the route.
+    By paying attention to the order given for each job,
+    it finds the vehicle that will do the job in the shortest time among all the vehicles.
+    """
     def find_best_routes(self):
         for job in self.jobs.values():  # type: Job
             logger.info("*" * 30)
@@ -15,6 +20,11 @@ class FindBestRouteFlatten(BaseRouteFinder):
         return self.output
 
     def _find_best_vehicle(self, current_job: Job):
+        """
+        Finds the vehicle that can do this job as soon as possible among the tools for the desired job.
+        :param current_job: The job for which the shortest duration is desired.
+        :return:  vehicle that does the given job in the shortest time
+        """
         best_distance = 0
         best_vehicle = None
         for vehicle in self.vehicles.values():
@@ -32,6 +42,9 @@ class FindBestRouteFlatten(BaseRouteFinder):
 
 
 class FindBestRouteComplex(BaseRouteFinder):
+    """
+    The algorithm that prioritizes the completion of all jobs as soon as possible while calculating the route.
+    """
     def __init__(self, *args, **kwargs):
         super(FindBestRouteComplex, self).__init__(*args, **kwargs)
         self.distances = self.calculate_distances()
@@ -49,6 +62,11 @@ class FindBestRouteComplex(BaseRouteFinder):
         return self.output
 
     def _find_current_distances(self, v_id):
+        """
+        Calculates the distance of vehicles to jobs when each job is done.
+        :param v_id: the ID value of the specified vehicle
+        :return:
+        """
         distances = {}
         for j_id, j_data in self.jobs.items():
             if self.vehicles[v_id].capacity >= j_data.delivery:
@@ -57,6 +75,10 @@ class FindBestRouteComplex(BaseRouteFinder):
         return distances
 
     def find_next_job(self):
+        """
+        Finds the next job with the shortest time to do in each loop.
+        :return: next job id, vehicle id, shortest distance.
+        """
         min_jobs = self.get_min_jobs()
         min_distance = None
         target_min_job = None
@@ -70,6 +92,10 @@ class FindBestRouteComplex(BaseRouteFinder):
         return target_min_job
 
     def get_min_jobs(self):
+        """
+        Returns the work that each tool can do in the shortest amount of time.
+        :return: shortest jobs and vehicles
+        """
         min_jobs = {}
         for v_id in self.vehicles:
             if self.vehicles[v_id].capacity > 0:
@@ -78,9 +104,20 @@ class FindBestRouteComplex(BaseRouteFinder):
         return min_jobs
 
     def calculate_distances(self):
+        """
+        Calculates the distances of each vehicle to the currently existing jobs.
+        :return: dict of vehicles and jobs.
+        """
         return {v_id: self._find_current_distances(v_id) for v_id in self.vehicles}
 
     def do_the_job(self, v_id, j_id, distance):
+        """
+        The function that makes the updates in the data to be done for the job to be done.
+        :param v_id: the id of the vehicle that will do the job
+        :param j_id: id of the job to be done
+        :param distance: distance of job
+        :return:
+        """
         # TODO Check Vehicle available/unavailable status
         self.vehicles[v_id].capacity -= self.jobs[j_id].delivery
         self.vehicles[v_id].start_index = self.jobs[j_id].location_index
