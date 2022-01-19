@@ -33,7 +33,7 @@ Name                             Stmts   Miss  Cover   Missing
 api.py                              26      0   100%
 app_consts.py                        6      0   100%
 core/algorithms.py                  75      0   100%
-core/base_models.py                 48      1    98%   86
+core/utils.py                       48      1    98%   86
 tests/__init__.py                    0      0   100%
 tests/test_api.py                   14      0   100%
 tests/test_core_base_models.py      40      2    95%   35, 41
